@@ -89,6 +89,10 @@
   #answer.shown{visibility:visible;white-space:pre-line}
   #answer.multi{font-size:clamp(20px,2.9vw,52px)}
   #answer.empty{color:var(--muted);font-style:italic}
+  #clue-text.trail{display:inline-block;text-align:left;margin:0 auto;font-family:ui-monospace,"Cascadia Mono","SFMono-Regular",Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;line-height:1.45;font-size:clamp(22px,3.6vw,64px)}
+  .clip-link{display:none;margin-top:.15em;font-family:var(--display);font-weight:600;font-size:clamp(18px,2.2vw,34px);color:var(--gold);text-decoration:underline;text-underline-offset:.15em;padding:.25em .2em}
+  .clip-link.on{display:inline-block}
+  .clip-link:hover,.clip-link:focus-visible{color:var(--orange);outline:none}
   .clue-actions{display:flex;gap:2vw;justify-content:center;flex:0 0 auto}
   .clue-actions .btn-big{font-size:clamp(18px,2.2vw,36px)}
   .clue-actions .btn-big.secondary{background:rgba(255,255,255,.1);color:var(--cream);box-shadow:none;border:2px solid rgba(255,255,255,.3)}
@@ -157,46 +161,46 @@ const GAME = {
   maxTeams: 6,
   categories: [
     { name: "Cedar Hoes", clues: [
-      { value: 200,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 400,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 600,  clue: "COMING SOON.", answer: "TBD" },
+      { value: 200,  clue: "WHAT WAS THE TRADITION OF KISSING AFTER SCHOOL DANCES CALLED?", answer: "Knighting" },
+      { value: 400,  clue: "WHAT ARE THE NAMES OF THE TWIN SONS OF UTAH SENATOR MIKE LEE?", answer: "James and John Lee" },
+      { value: 600,  clue: "WHO PLAYED JEAN VALJEAN IN LONE PEAK'S 2013 PRODUCTION OF LES MISÉRABLES?", answer: "Jake Nilson" },
       { value: 800,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 1000, clue: "COMING SOON.", answer: "TBD" }
+      { value: 1000, clue: "NAME THE STARTING FIVE OF LONE PEAK'S 2013 NATIONAL CHAMPIONSHIP BASKETBALL TEAM.", answer: "Talon Shumway, Erik Mika, Nick Emery, TJ Haws, Connor Toolson" }
     ]},
     { name: "The Boy Who Lived", clues: [
       { value: 200,  clue: "THIS IS THE NAME OF HARRY POTTER'S SNOWY OWL.", answer: "Hedwig" },
       { value: 400,  clue: "HARRY CATCHES THE HOGWARTS EXPRESS FROM THIS PLATFORM AT KING'S CROSS STATION.", answer: "Platform 9¾ (Nine and Three-Quarters)" },
       { value: 600,  clue: "THESE THREE MAGICAL OBJECTS MAKE UP THE DEATHLY HALLOWS.", answer: "The Elder Wand, the Resurrection Stone, and the Invisibility Cloak" },
-      { value: 800,  clue: "THIS WAS LORD VOLDEMORT'S FULL NAME AT BIRTH.", answer: "Tom Marvolo Riddle" },
+      { value: 800,  clue: "THE PAGE SNAPE TELLS THE CLASS TO TURN TO IN THE WEREWOLF LESSON.", answer: "Page 394", clip: "https://www.youtube.com/watch?v=PnOyBLT07R8" },
       { value: 1000, clue: "NAME ALL SEVEN HORCRUXES THAT CONTAINED A PIECE OF VOLDEMORT'S SOUL.", answer: "Tom Riddle's diary, Marvolo Gaunt's ring, Salazar Slytherin's locket, Helga Hufflepuff's cup, Rowena Ravenclaw's diadem, Harry Potter, and Nagini" }
     ]},
     { name: "Fifty Nifty", clues: [
       { value: 200,  clue: "THIS IS THE LARGEST U.S. STATE BY AREA.", answer: "Alaska" },
-      { value: 400,  clue: "THIS RIVER FORMS MUCH OF THE BORDER BETWEEN TEXAS AND MEXICO.", answer: "The Rio Grande" },
-      { value: 600,  clue: "THIS IS THE ONLY ONE OF THE FIVE GREAT LAKES THAT DOES NOT BORDER CANADA.", answer: "Lake Michigan" },
-      { value: 800,  clue: "THESE FOUR STATES MEET AT A SINGLE POINT KNOWN AS THE FOUR CORNERS.", answer: "Arizona, Colorado, New Mexico, and Utah" },
-      { value: 1000, clue: "THIS PEAK IN ALASKA IS THE HIGHEST IN NORTH AMERICA.", answer: "Denali (also known as Mount McKinley)" }
+      { value: 400,  clue: "THIS CITY IS THE CAPITAL OF SOUTH DAKOTA.", answer: "Pierre" },
+      { value: 600,  clue: "THESE FOUR STATES MEET AT A SINGLE POINT KNOWN AS THE FOUR CORNERS.", answer: "Arizona, Colorado, New Mexico, and Utah" },
+      { value: 800,  clue: "THIS IS THE ONLY ONE OF THE FIVE GREAT LAKES THAT DOES NOT BORDER CANADA.", answer: "Lake Michigan" },
+      { value: 1000, clue: "THIS STATE CONTAINS BOTH THE HIGHEST AND LOWEST POINTS IN THE CONTIGUOUS UNITED STATES.", answer: "California (Mount Whitney and Death Valley)" }
     ]},
     { name: "DTF the Stars", clues: [
-      { value: 200,  clue: "THE TROPHY THIS SEASON'S WINNER WILL TAKE HOME IS OFFICIALLY CALLED THIS.", answer: "The Len Goodman Mirrorball Trophy" },
-      { value: 400,  clue: "THESE TWO PEOPLE HOST THE SHOW THIS SEASON.", answer: "Alfonso Ribeiro and Julianne Hough" },
-      { value: 600,  clue: "THIS THEME NIGHT WAS THE ONLY WEEK THIS SEASON WITH NO ELIMINATION.", answer: "Dedication Night" },
-      { value: 800,  clue: "DESPITE A PERFECT COMBINED SCORE OF 60 FROM THE JUDGES IN THE SEMIFINALS, THIS CELEBRITY AND HIS PARTNER JENNA JOHNSON WERE ELIMINATED.", answer: "Harry Shum Jr." },
-      { value: 1000, clue: "NAME THE FIVE CELEBRITIES STILL IN THE RUNNING FOR THE LEN GOODMAN MIRRORBALL TROPHY.", answer: "Tatyana Ali, Ezra Frech, Amber Glenn, Maura Higgins, and Connor Wood" }
+      { value: 200,  clue: "THIS THEME NIGHT WAS THE ONLY WEEK THIS SEASON WITH NO ELIMINATION.", answer: "Dedication Night" },
+      { value: 400,  clue: "THE TROPHY THIS SEASON'S WINNER WILL TAKE HOME IS OFFICIALLY CALLED THIS.", answer: "The Len Goodman Mirrorball Trophy" },
+      { value: 600,  clue: "THESE TWO PEOPLE HOST THE SHOW THIS SEASON.", answer: "Alfonso Ribeiro and Julianne Hough" },
+      { value: 800,  clue: "NAME THE FIVE CELEBRITIES STILL IN THE RUNNING FOR THE LEN GOODMAN MIRRORBALL TROPHY.", answer: "Tatyana Ali, Ezra Frech, Amber Glenn, Maura Higgins, and Connor Wood" },
+      { value: 1000, clue: "CONNER LEAVITT WAS PAIRED WITH THIS FIRST-TIME PROFESSIONAL DANCER.", answer: "Adele Zaikman" }
     ]},
     { name: "Zan is a Communist", clues: [
-      { value: 200,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 400,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 600,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 800,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 1000, clue: "COMING SOON.", answer: "TBD" }
+      { value: 200,  clue: "THIS IS THE YEAR IN THE TITLE OF THE GAME HOLLYWOOD ______.", answer: "1947" },
+      { value: 400,  clue: "IN AN 8-PLAYER GAME, HOW MANY PLAYERS ARE PATRIOTS, COMMUNISTS, AND THE RISING STAR?", answer: "4 Patriots, 3 Communists, and 1 Rising Star" },
+      { value: 600,  clue: "THIS IS THE JOB ON CARD NUMBER 6.", answer: "Actress" },
+      { value: 800,  clue: "IF A MOVIE ENDS WITH AN EQUAL NUMBER OF PATRIOT AND COMMUNIST SYMBOLS, THIS TEAM WINS THE ROUND.", answer: "The Communists" },
+      { value: 1000, clue: "THE RISING STAR WINS ONLY IF THE GAME REACHES A 3–3 TIE AFTER SIX MOVIES AND THE SEVENTH MOVIE IS A TIE OR WON BY THIS MARGIN.", answer: "1 symbol (a +1 win)" }
     ]},
     { name: "Messy Minutes", clues: [
-      { value: 200,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 400,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 600,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 800,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 1000, clue: "COMING SOON.", answer: "TBD" }
+      { value: 200,  trail: true, clue: "DINNER\nT _ _ _ _\nC _ _ _ _\nN _ _ _ _ _\nR _ _ _", answer: "DINNER TABLE CLOTH NAPKIN RING" },
+      { value: 400,  trail: true, clue: "WISH\nB _ _ _\nD _ _\nR _ _\nW _ _", answer: "WISH BONE DRY RUN WAY" },
+      { value: 600,  trail: true, clue: "SWEET\nP _ _ _ _ _\nS _ _ _ _\nB _ _\nT _ _ _ _ _", answer: "SWEET POTATO SALAD BAR TENDER" },
+      { value: 800,  trail: true, clue: "MASHED\nP _ _ _ _ _\nH _ _ _\nS _ _ _ _\nU _\nS _ _", answer: "MASHED POTATO HEAD START UP SET" },
+      { value: 1000, trail: true, clue: "GRAVY\nT _ _ _ _\nS _ _ _ _ _ _\nW _ _ _ _\nW _ _ _ _\nH _ _ _ _\nW _ _ _ _ _ _", answer: "GRAVY TRAIN STATION WAGON WHEEL HOUSE WARMING" }
     ]}
   ]
 };
@@ -255,6 +259,7 @@ const GAME = {
     <p id="clue-text"></p>
     <img id="clue-img" alt="">
     <div id="answer"></div>
+    <a id="clue-clip" class="clip-link" target="_blank" rel="noopener noreferrer">Watch the clip</a>
   </div>
   <div class="clue-actions">
     <button class="btn-big" id="reveal-btn">Reveal answer</button>
@@ -267,7 +272,7 @@ const GAME = {
 <script>
 (function(){
   "use strict";
-  var KEY = "jeopardy-friendsgiving-v1";
+  var KEY = "jeopardy-friendsgiving-v2";
   var DEFAULT_NAMES = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
   var MAXT = GAME.maxTeams || 6;
 
@@ -393,9 +398,10 @@ const GAME = {
     var cat = GAME.categories[c], clue = cat.clues[r];
     $("clue-cat").textContent = cat.name;
     $("clue-val").textContent = "$"+clue.value;
-    var ct = $("clue-text"); ct.textContent = clue.clue; ct.classList.toggle("long", clue.clue.length > 90); ct.classList.toggle("lines", clue.clue.indexOf("\n") >= 0);
+    var ct = $("clue-text"); ct.textContent = clue.clue; ct.classList.toggle("long", clue.clue.length > 90); ct.classList.toggle("lines", clue.clue.indexOf("\n") >= 0); ct.classList.toggle("trail", !!clue.trail);
     var im = $("clue-img"); if(clue.img){ im.src = clue.img; im.className = "on"; } else { im.className = ""; im.removeAttribute("src"); }
     var a = $("answer"); a.className = ""; a.textContent = "\u00a0";
+    var clip = $("clue-clip"); clip.classList.remove("on"); clip.removeAttribute("href");
     $("reveal-btn").disabled = false;
     renderClueScores();
     show("clue-screen");
@@ -409,6 +415,7 @@ const GAME = {
     a.textContent = has ? clue.answer : "No answer added";
     a.className = "shown" + (has ? "" : " empty") + (has && String(clue.answer).indexOf("\n") >= 0 ? " multi" : "");
     if(clue.full){ $("clue-img").src = clue.full; }
+    if(clue.clip){ var clip = $("clue-clip"); clip.href = clue.clip; clip.classList.add("on"); }
     $("reveal-btn").disabled = true;
   }
   function backToBoard(){
