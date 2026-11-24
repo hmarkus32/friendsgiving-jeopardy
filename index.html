@@ -90,9 +90,9 @@
   #answer.multi{font-size:clamp(20px,2.9vw,52px)}
   #answer.empty{color:var(--muted);font-style:italic}
   #clue-text.trail{display:inline-block;text-align:left;margin:0 auto;font-family:ui-monospace,"Cascadia Mono","SFMono-Regular",Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;line-height:1.45;font-size:clamp(22px,3.6vw,64px)}
-  .clip-link{display:none;margin-top:.15em;font-family:var(--display);font-weight:600;font-size:clamp(18px,2.2vw,34px);color:var(--gold);text-decoration:underline;text-underline-offset:.15em;padding:.25em .2em}
-  .clip-link.on{display:inline-block}
-  .clip-link:hover,.clip-link:focus-visible{color:var(--orange);outline:none}
+  .clip-wrap{display:none;width:min(92vw,520px,calc(28vh * 16 / 9));aspect-ratio:16/9;max-height:28vh;margin:.35em auto 0;border-radius:1.2vmin;overflow:hidden;background:#000;border:3px solid var(--orange);box-shadow:0 .6vmin 2vmin rgba(0,0,0,.35);flex:0 0 auto}
+  .clip-wrap.on{display:block}
+  .clip-wrap iframe{width:100%;height:100%;border:0;display:block}
   .clue-actions{display:flex;gap:2vw;justify-content:center;flex:0 0 auto}
   .clue-actions .btn-big{font-size:clamp(18px,2.2vw,36px)}
   .clue-actions .btn-big.secondary{background:rgba(255,255,255,.1);color:var(--cream);box-shadow:none;border:2px solid rgba(255,255,255,.3)}
@@ -165,13 +165,13 @@ const GAME = {
       { value: 400,  clue: "WHAT ARE THE NAMES OF THE TWIN SONS OF UTAH SENATOR MIKE LEE?", answer: "James and John Lee" },
       { value: 600,  clue: "WHO PLAYED JEAN VALJEAN IN LONE PEAK'S 2013 PRODUCTION OF LES MISÉRABLES?", answer: "Jake Nilson" },
       { value: 800,  clue: "COMING SOON.", answer: "TBD" },
-      { value: 1000, clue: "NAME THE STARTING FIVE OF LONE PEAK'S 2013 NATIONAL CHAMPIONSHIP BASKETBALL TEAM.", answer: "Talon Shumway, Erik Mika, Nick Emery, TJ Haws, Connor Toolson" }
+      { value: 1000, clue: "NAME THE STARTING FIVE OF LONE PEAK'S 2013 NATIONAL CHAMPIONSHIP BASKETBALL TEAM.", answer: "Talon Shumway, Eric Mika, Nick Emery, TJ Haws, Connor Toolson" }
     ]},
     { name: "The Boy Who Lived", clues: [
       { value: 200,  clue: "THIS IS THE NAME OF HARRY POTTER'S SNOWY OWL.", answer: "Hedwig" },
       { value: 400,  clue: "HARRY CATCHES THE HOGWARTS EXPRESS FROM THIS PLATFORM AT KING'S CROSS STATION.", answer: "Platform 9¾ (Nine and Three-Quarters)" },
       { value: 600,  clue: "THESE THREE MAGICAL OBJECTS MAKE UP THE DEATHLY HALLOWS.", answer: "The Elder Wand, the Resurrection Stone, and the Invisibility Cloak" },
-      { value: 800,  clue: "THE PAGE SNAPE TELLS THE CLASS TO TURN TO IN THE WEREWOLF LESSON.", answer: "Page 394", clip: "https://www.youtube.com/watch?v=PnOyBLT07R8" },
+      { value: 800,  clue: "THE PAGE SNAPE TELLS THE CLASS TO TURN TO IN THE WEREWOLF LESSON.", answer: "Page 394", clip: "https://www.youtube.com/watch?v=YlIKLLkvulY" },
       { value: 1000, clue: "NAME ALL SEVEN HORCRUXES THAT CONTAINED A PIECE OF VOLDEMORT'S SOUL.", answer: "Tom Riddle's diary, Marvolo Gaunt's ring, Salazar Slytherin's locket, Helga Hufflepuff's cup, Rowena Ravenclaw's diadem, Harry Potter, and Nagini" }
     ]},
     { name: "Fifty Nifty", clues: [
@@ -259,7 +259,9 @@ const GAME = {
     <p id="clue-text"></p>
     <img id="clue-img" alt="">
     <div id="answer"></div>
-    <a id="clue-clip" class="clip-link" target="_blank" rel="noopener noreferrer">Watch the clip</a>
+    <div id="clue-clip" class="clip-wrap" hidden>
+      <iframe id="clue-clip-frame" title="Snape: turn to page 394" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
   </div>
   <div class="clue-actions">
     <button class="btn-big" id="reveal-btn">Reveal answer</button>
@@ -299,7 +301,17 @@ const GAME = {
   var current = null;   // {c, r}
   var $ = function(id){ return document.getElementById(id); };
 
+  function clipEmbedUrl(url){
+    var m = String(url||"").match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
+    return m ? "https://www.youtube-nocookie.com/embed/"+m[1]+"?playsinline=1" : "";
+  }
+  function clearClip(){
+    var wrap = $("clue-clip"), frame = $("clue-clip-frame");
+    if(frame){ frame.removeAttribute("src"); try{ frame.src = ""; }catch(e){} }
+    if(wrap){ wrap.classList.remove("on"); wrap.hidden = true; }
+  }
   function show(id){
+    if(id !== "clue-screen") clearClip();
     ["title","board-screen","clue-screen","final-screen","podium-screen"].forEach(function(s){ $(s).classList.toggle("active", s===id); });
   }
   function fmt(n){ return (n<0?"-":"") + "$" + Math.abs(n).toLocaleString("en-US"); }
@@ -401,7 +413,7 @@ const GAME = {
     var ct = $("clue-text"); ct.textContent = clue.clue; ct.classList.toggle("long", clue.clue.length > 90); ct.classList.toggle("lines", clue.clue.indexOf("\n") >= 0); ct.classList.toggle("trail", !!clue.trail);
     var im = $("clue-img"); if(clue.img){ im.src = clue.img; im.className = "on"; } else { im.className = ""; im.removeAttribute("src"); }
     var a = $("answer"); a.className = ""; a.textContent = "\u00a0";
-    var clip = $("clue-clip"); clip.classList.remove("on"); clip.removeAttribute("href");
+    clearClip();
     $("reveal-btn").disabled = false;
     renderClueScores();
     show("clue-screen");
@@ -415,7 +427,10 @@ const GAME = {
     a.textContent = has ? clue.answer : "No answer added";
     a.className = "shown" + (has ? "" : " empty") + (has && String(clue.answer).indexOf("\n") >= 0 ? " multi" : "");
     if(clue.full){ $("clue-img").src = clue.full; }
-    if(clue.clip){ var clip = $("clue-clip"); clip.href = clue.clip; clip.classList.add("on"); }
+    if(clue.clip){
+      var wrap = $("clue-clip"), frame = $("clue-clip-frame"), src = clipEmbedUrl(clue.clip);
+      if(wrap && frame && src){ frame.src = src; wrap.classList.add("on"); wrap.hidden = false; }
+    }
     $("reveal-btn").disabled = true;
   }
   function backToBoard(){
