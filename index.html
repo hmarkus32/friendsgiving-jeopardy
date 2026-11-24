@@ -155,6 +155,37 @@
   #confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:3px;animation:fall linear forwards}
   #confetti i.emo{width:auto;height:auto;background:none}
   @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+  /* ---- Team setup + category intro ---- */
+  #setup-screen{align-items:center;justify-content:center;text-align:center;gap:3vh;padding:4vh 4vw 5vh}
+  #setup-screen h2{font-size:clamp(28px,5vw,64px)}
+  #setup-screen .hint{font-size:clamp(14px,1.5vw,22px);color:var(--muted)}
+  #setup-screen .scoreboard{flex-wrap:wrap;max-width:min(94vw,1100px);gap:1.2vw 1.4vw}
+  #setup-screen .team{max-width:28vw;min-width:140px;flex:1 1 140px;padding:1.4vh 1.4vw}
+  #setup-screen .team input{font-size:clamp(16px,2vw,32px)}
+  #intro-screen{align-items:center;justify-content:center;text-align:center;overflow:hidden;cursor:pointer;
+    background:radial-gradient(1000px 600px at 50% 35%, #8a3a18 0%, #4a1a14 60%, #2a100c 100%)}
+  #intro-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .intro-ambient{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+  .intro-ambient span{position:absolute;top:-12%;animation:introFall linear infinite;font-size:clamp(20px,3.6vw,48px);will-change:transform}
+  @keyframes introFall{to{transform:translateY(125vh) rotate(640deg)}}
+  .intro-glow{position:absolute;width:min(80vw,560px);height:min(80vw,560px);border-radius:50%;
+    background:radial-gradient(circle,rgba(255,154,60,.48) 0%,rgba(255,196,77,.16) 40%,transparent 70%);
+    filter:blur(6px);animation:introPulse 2.2s ease-in-out infinite;z-index:2;pointer-events:none}
+  @keyframes introPulse{0%,100%{transform:scale(.9);opacity:.65}50%{transform:scale(1.14);opacity:1}}
+  .intro-card{position:relative;z-index:3;padding:3vh 5vw;display:flex;flex-direction:column;align-items:center;gap:2vh;max-width:94vw}
+  #intro-count{margin:0;font-family:var(--display);font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-size:clamp(15px,2.3vw,32px);text-shadow:0 .08em .2em rgba(0,0,0,.4)}
+  #intro-name{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(36px,9.2vw,128px);line-height:1.05;max-width:92vw;
+    background:linear-gradient(180deg,#ffd27a 0%,#ff8a2a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 28px rgba(255,154,60,.7)) drop-shadow(0 .05em 0 rgba(0,0,0,.35))}
+  #intro-name.pop{animation:introPop .7s cubic-bezier(.2,1.55,.3,1) both}
+  @keyframes introPop{0%{transform:scale(.42);opacity:0}58%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+  .intro-hint{margin:0;color:var(--muted);font-size:clamp(14px,1.8vw,24px)}
+  #intro-skip{position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:4}
+  @media (max-width:699px){
+    #setup-screen .team{max-width:46vw;min-width:42vw}
+    #intro-name{font-size:clamp(34px,11vw,72px)}
+  }
 </style>
 </head>
 <body>
@@ -172,7 +203,7 @@ const GAME = {
       { value: 200,  clue: "WHAT WAS THE TRADITION OF KISSING AFTER SCHOOL DANCES CALLED?", answer: "Knighting" },
       { value: 400,  clue: "WHAT ARE THE NAMES OF THE TWIN SONS OF UTAH SENATOR MIKE LEE?", answer: "James and John Lee" },
       { value: 600,  clue: "WHO PLAYED JEAN VALJEAN IN LONE PEAK'S 2013 PRODUCTION OF LES MISÉRABLES?", answer: "Jake Nilson" },
-      { value: 800,  clue: "COMING SOON.", answer: "TBD" },
+      { value: 800,  clue: "THIS TEACHER WHO DESERVED ALL OF THE RUDENESS IN THE WORLD HAD THIS WEAPON HANGING IN HIS OR HER CLASSROOM.", answer: "Bowling ball" },
       { value: 1000, clue: "NAME THE STARTING FIVE OF LONE PEAK'S 2013 NATIONAL CHAMPIONSHIP BASKETBALL TEAM.", answer: "Talon Shumway, Eric Mika, Nick Emery, TJ Haws, Connor Toolson" }
     ]},
     { name: "The Boy Who Lived", clues: [
@@ -229,6 +260,28 @@ const GAME = {
   <div class="hint">Click a tile to open a clue &nbsp;•&nbsp; Esc = back</div>
 </div>
 
+<!-- Team setup -->
+<div id="setup-screen" class="screen">
+  <div class="pumpkins" aria-hidden="true">🦃🍂🥧🍁</div>
+  <h2>Who's playing?</h2>
+  <div class="scoreboard" id="setup-teams"></div>
+  <button class="btn-big" id="play-btn" type="button">Play Game 🦃</button>
+  <div class="hint">Name your teams, then start the show</div>
+</div>
+
+<!-- Category intro -->
+<div id="intro-screen" class="screen">
+  <canvas id="intro-canvas" aria-hidden="true"></canvas>
+  <div class="intro-ambient" aria-hidden="true"></div>
+  <div class="intro-glow" aria-hidden="true"></div>
+  <div class="intro-card">
+    <p id="intro-count"></p>
+    <h1 id="intro-name"></h1>
+    <p class="intro-hint">Tap to continue</p>
+  </div>
+  <button type="button" class="btn-small" id="intro-skip">Skip intro</button>
+</div>
+
 <!-- Board -->
 <div id="board-screen" class="screen">
   <div class="topbar">
@@ -282,7 +335,7 @@ const GAME = {
 <script>
 (function(){
   "use strict";
-  var KEY = "jeopardy-friendsgiving-v9";
+  var KEY = "jeopardy-friendsgiving-v10";
   var DEFAULT_NAMES = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
   var MAXT = GAME.maxTeams || 6;
 
@@ -324,7 +377,8 @@ const GAME = {
   }
   function show(id){
     if(id !== "clue-screen") clearClip();
-    ["title","board-screen","clue-screen","final-screen","podium-screen"].forEach(function(s){ $(s).classList.toggle("active", s===id); });
+    if(id !== "intro-screen") stopIntroFx();
+    ["title","setup-screen","intro-screen","board-screen","clue-screen","final-screen","podium-screen"].forEach(function(s){ $(s).classList.toggle("active", s===id); });
   }
   function fmt(n){ return (n<0?"-":"") + "$" + Math.abs(n).toLocaleString("en-US"); }
   function key(c,r){ return c+"-"+r; }
@@ -536,7 +590,169 @@ const GAME = {
   $("results-btn").addEventListener("click", showResults);
   $("final-back").addEventListener("click", function(){ renderBoard(); renderBoardScores(); show("board-screen"); });
   $("podium-back").addEventListener("click", function(){ renderBoard(); renderBoardScores(); show("board-screen"); });
-  $("start-btn").addEventListener("click", function(){ renderBoard(); renderBoardScores(); show("board-screen"); });
+  function gameInProgress(){
+    for(var k in state.played){ if(state.played[k]) return true; }
+    return false;
+  }
+  function renderSetup(){
+    var box = $("setup-teams"); box.innerHTML = "";
+    state.teams.forEach(function(tm,i){
+      var d = document.createElement("div"); d.className = "team"; d.dataset.i = i;
+      d.appendChild(teamNameInput(i));
+      box.appendChild(d);
+    });
+    var ctl = document.createElement("div"); ctl.className = "team-ctl";
+    if(state.teams.length < MAXT){
+      var add = document.createElement("button"); add.className="btn-small"; add.type="button"; add.textContent="+ Team";
+      add.addEventListener("click", function(){ state.teams.push({name:DEFAULT_NAMES[state.teams.length]||("Team "+(state.teams.length+1)), score:0}); save(); renderSetup(); });
+      ctl.appendChild(add);
+    }
+    if(state.teams.length > 1){
+      var rm = document.createElement("button"); rm.className="btn-small"; rm.type="button"; rm.textContent="− Team";
+      rm.addEventListener("click", function(){ state.teams.pop(); save(); renderSetup(); });
+      ctl.appendChild(rm);
+    }
+    box.appendChild(ctl);
+  }
+  function goToBoard(){
+    intro.running = false;
+    intro.finishing = false;
+    renderBoard(); renderBoardScores(); show("board-screen");
+  }
+
+  var intro = { idx:0, particles:[], raf:0, running:false, finishing:false, lastAdvance:0, timer:0, ctx:null };
+  var INTRO_EMO = ["🦃","🍂","🥧","🌽","🍁"];
+  var INTRO_COLS = ["#ff8a1f","#c4491a","#ffc44d","#7a2e1c","#e8c9a8","#3f7a3a","#fff8ec"];
+  function stopIntroFx(){
+    intro.running = false;
+    intro.finishing = false;
+    clearTimeout(intro.timer);
+    intro.timer = 0;
+  }
+  function sizeIntroCanvas(){
+    var c = $("intro-canvas"); if(!c) return;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = Math.floor(window.innerWidth * dpr);
+    c.height = Math.floor(window.innerHeight * dpr);
+    intro.ctx = c.getContext("2d");
+    intro.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function spawnBurst(big){
+    var n = big ? 200 : 110;
+    var W = window.innerWidth, H = window.innerHeight;
+    var cx = W/2, cy = H*0.42;
+    for(var i=0;i<n;i++){
+      var ang = Math.random()*Math.PI*2;
+      var sp = (big?7:4.5) + Math.random()*(big?16:11);
+      intro.particles.push({
+        x:cx, y:cy,
+        vx:Math.cos(ang)*sp,
+        vy:Math.sin(ang)*sp - (big?6:3.5),
+        g:0.16+Math.random()*0.14,
+        life:1,
+        decay:0.007+Math.random()*0.01,
+        color:INTRO_COLS[i%INTRO_COLS.length],
+        emo:(i%3===0) ? INTRO_EMO[i%INTRO_EMO.length] : null,
+        size:6+Math.random()*(big?12:8),
+        rot:Math.random()*360,
+        vr:-10+Math.random()*20
+      });
+    }
+    if(!intro.raf) intro.raf = requestAnimationFrame(tickIntro);
+  }
+  function tickIntro(){
+    var ctx = intro.ctx, W = window.innerWidth, H = window.innerHeight;
+    intro.raf = 0;
+    if(!ctx){ return; }
+    ctx.clearRect(0,0,W,H);
+    intro.particles = intro.particles.filter(function(p){
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= p.decay;
+      if(p.life<=0 || p.y>H+50) return false;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha = Math.max(0,p.life);
+      if(p.emo){
+        ctx.font = (p.size*2.1)+"px serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(p.emo,0,0);
+      } else {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size/2,-p.size/3,p.size,p.size*0.65);
+      }
+      ctx.restore();
+      return true;
+    });
+    if($("intro-screen").classList.contains("active") || intro.particles.length){
+      intro.raf = requestAnimationFrame(tickIntro);
+    }
+  }
+  function fillAmbient(){
+    var box = document.querySelector("#intro-screen .intro-ambient");
+    box.innerHTML = "";
+    for(var i=0;i<18;i++){
+      var s = document.createElement("span");
+      s.textContent = INTRO_EMO[i%INTRO_EMO.length];
+      s.style.left = (Math.random()*100)+"vw";
+      s.style.animationDuration = (6+Math.random()*8)+"s";
+      s.style.animationDelay = (-Math.random()*10)+"s";
+      s.style.fontSize = (18+Math.random()*30)+"px";
+      s.style.opacity = String(0.28+Math.random()*0.45);
+      box.appendChild(s);
+    }
+  }
+  function showIntroCard(){
+    var cats = GAME.categories;
+    $("intro-count").textContent = "Category "+(intro.idx+1)+" of "+cats.length;
+    var name = $("intro-name");
+    name.textContent = cats[intro.idx].name;
+    name.classList.remove("pop");
+    void name.offsetWidth;
+    name.classList.add("pop");
+    spawnBurst(false);
+  }
+  function startIntro(){
+    intro.idx = 0;
+    intro.finishing = false;
+    intro.running = true;
+    intro.lastAdvance = 0;
+    intro.particles = [];
+    show("intro-screen");
+    sizeIntroCanvas();
+    fillAmbient();
+    showIntroCard();
+    if(!intro.raf) intro.raf = requestAnimationFrame(tickIntro);
+  }
+  function advanceIntro(){
+    if(!intro.running || intro.finishing) return;
+    var now = Date.now();
+    if(now - intro.lastAdvance < 280) return;
+    intro.lastAdvance = now;
+    if(intro.idx >= GAME.categories.length-1){
+      intro.finishing = true;
+      spawnBurst(true);
+      spawnBurst(true);
+      clearTimeout(intro.timer);
+      intro.timer = setTimeout(goToBoard, 1200);
+      return;
+    }
+    intro.idx += 1;
+    showIntroCard();
+  }
+  window.addEventListener("resize", function(){
+    if($("intro-screen").classList.contains("active")) sizeIntroCanvas();
+  });
+
+  $("start-btn").addEventListener("click", function(){
+    if(gameInProgress()){ renderBoard(); renderBoardScores(); show("board-screen"); }
+    else { renderSetup(); show("setup-screen"); }
+  });
+  $("play-btn").addEventListener("click", startIntro);
+  $("intro-skip").addEventListener("click", function(e){ e.preventDefault(); e.stopPropagation(); goToBoard(); });
+  $("intro-screen").addEventListener("click", function(e){
+    if(e.target.closest && e.target.closest("#intro-skip")) return;
+    advanceIntro();
+  });
   $("title-btn").addEventListener("click", function(){ show("title"); $("start-btn").focus(); });
   $("reveal-btn").addEventListener("click", reveal);
   $("back-btn").addEventListener("click", backToBoard);
@@ -551,8 +767,15 @@ const GAME = {
     if(e.key === "Escape"){
       if(typing){ e.target.blur(); return; }
       if($("clue-screen").classList.contains("active")) backToBoard();
+      else if($("intro-screen").classList.contains("active")) { renderSetup(); show("setup-screen"); }
+      else if($("setup-screen").classList.contains("active")) { show("title"); $("start-btn").focus(); }
       else if($("board-screen").classList.contains("active")) { show("title"); }
       else if($("final-screen").classList.contains("active") || $("podium-screen").classList.contains("active")) { renderBoard(); renderBoardScores(); show("board-screen"); }
+      return;
+    }
+    if($("intro-screen").classList.contains("active") && !typing && (e.key===" " || e.key==="ArrowRight")){
+      e.preventDefault();
+      advanceIntro();
       return;
     }
     if($("clue-screen").classList.contains("active") && !typing && (e.key===" " || e.key==="Enter")){
