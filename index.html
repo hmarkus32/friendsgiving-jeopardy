@@ -96,6 +96,8 @@
   #answer.multi{font-size:clamp(20px,2.9vw,52px)}
   #answer.empty{color:var(--muted);font-style:italic}
   #clue-text.trail{display:inline-block;text-align:left;margin:0 auto;font-family:ui-monospace,"Cascadia Mono","SFMono-Regular",Menlo,Consolas,monospace;font-weight:800;letter-spacing:.08em;line-height:1.45;font-size:clamp(22px,3.6vw,64px)}
+  #clue-text.trail.long-trail{font-size:clamp(20px,min(5.8vw,3.6vh),40px);line-height:1.22;letter-spacing:.05em}
+  #clue-screen.long-trail #answer.shown{font-size:clamp(16px,2.4vw,40px);line-height:1.15}
   .clip-wrap{display:none;width:min(92vw,520px,calc(28vh * 16 / 9));aspect-ratio:16/9;max-height:28vh;margin:.35em auto 0;border-radius:1.2vmin;overflow:hidden;background:#000;border:3px solid var(--orange);box-shadow:0 .6vmin 2vmin rgba(0,0,0,.35);flex:0 0 auto}
   .clip-wrap.on{display:block}
   .clip-wrap iframe{width:100%;height:100%;border:0;display:block}
@@ -206,7 +208,7 @@ const GAME = {
       { value: 400,  trail: true, clue: "DINNER\nT _ _ _ _\nC _ _ _ _\nN _ _ _ _ _\nR _ _ _", answer: "DINNER TABLE CLOTH NAPKIN RING" },
       { value: 600,  trail: true, clue: "SWEET\nP _ _ _ _ _\nS _ _ _ _\nB _ _\nT _ _ _ _ _", answer: "SWEET POTATO SALAD BAR TENDER" },
       { value: 800,  trail: true, clue: "MASHED\nP _ _ _ _ _\nH _ _ _\nS _ _ _ _\nU _\nS _ _", answer: "MASHED POTATO HEAD START UP SET" },
-      { value: 1000, trail: true, clue: "GRAVY\nT _ _ _ _\nS _ _ _ _ _ _\nW _ _ _ _\nW _ _ _ _\nH _ _ _ _\nW _ _ _ _ _ _", answer: "GRAVY TRAIN STATION WAGON WHEEL HOUSE WARMING" }
+      { value: 1000, trail: true, clue: "GRAVY\nT _ _ _ _\nS _ _ _ _ _ _\nW _ _ _ _\nW _ _ _ _\nH _ _ _ _\nP _ _ _ _\nL _ _ _\nD _ _ _ _\nF _ _ _ _", answer: "GRAVY TRAIN STATION WAGON WHEEL HOUSE PARTY LINE DANCE FLOOR" }
     ]}
   ]
 };
@@ -280,7 +282,7 @@ const GAME = {
 <script>
 (function(){
   "use strict";
-  var KEY = "jeopardy-friendsgiving-v8";
+  var KEY = "jeopardy-friendsgiving-v9";
   var DEFAULT_NAMES = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
   var MAXT = GAME.maxTeams || 6;
 
@@ -420,7 +422,7 @@ const GAME = {
     var cat = GAME.categories[c], clue = cat.clues[r];
     $("clue-cat").textContent = cat.name;
     $("clue-val").textContent = "$"+clue.value;
-    var ct = $("clue-text"); ct.textContent = clue.clue; ct.classList.toggle("long", clue.clue.length > 90); ct.classList.toggle("lines", clue.clue.indexOf("\n") >= 0); ct.classList.toggle("trail", !!clue.trail);
+    var ct = $("clue-text"); ct.textContent = clue.clue; ct.classList.toggle("long", clue.clue.length > 90); ct.classList.toggle("lines", clue.clue.indexOf("\n") >= 0); ct.classList.toggle("trail", !!clue.trail); var longTrail = !!clue.trail && clue.clue.split("\n").length >= 8; ct.classList.toggle("long-trail", longTrail); $("clue-screen").classList.toggle("long-trail", longTrail);
     var im = $("clue-img"); if(clue.img){ im.src = clue.img; im.className = "on"; } else { im.className = ""; im.removeAttribute("src"); }
     var a = $("answer"); a.className = ""; a.textContent = "\u00a0";
     clearClip();
