@@ -83,8 +83,14 @@
     font-size:clamp(28px,4.8vw,92px);margin:0;overflow-wrap:break-word;text-shadow:0 .04em .12em rgba(0,0,0,.35)}
   #clue-text.long{font-size:clamp(24px,3.9vw,74px)}
   #clue-text.lines{font-size:clamp(20px,3.1vw,56px);line-height:1.2}
-  #clue-img{display:none;max-height:32vh;max-width:70vw;border:5px solid var(--orange);border-radius:2vmin;background:#fff;margin:0 auto;box-shadow:0 1vmin 3vmin rgba(0,0,0,.4)}
+  #clue-img{display:none;max-height:32vh;max-width:70vw;border:5px solid var(--orange);border-radius:2vmin;background:#fff;margin:0 auto;box-shadow:0 1vmin 3vmin rgba(0,0,0,.4);flex:0 0 auto}
   #clue-img.on{display:block}
+  #clue-text{order:1}
+  #clue-img{order:2}
+  #answer{order:3}
+  #clue-img.after-answer{order:4}
+  #clue-clip{order:5}
+  @media (min-width:800px){ #clue-img.on.after-answer{max-height:42vh} }
   #answer{font-family:var(--display);font-weight:700;color:var(--gold);font-size:clamp(26px,4.2vw,80px);min-height:1.3em;visibility:hidden;overflow-wrap:break-word;line-height:1.15}
   #answer.shown{visibility:visible;white-space:pre-line}
   #answer.multi{font-size:clamp(20px,2.9vw,52px)}
@@ -193,7 +199,7 @@ const GAME = {
       { value: 400,  clue: "IN AN 8-PLAYER GAME, HOW MANY PLAYERS ARE PATRIOTS, COMMUNISTS, AND THE RISING STAR?", answer: "4 Patriots, 3 Communists, and 1 Rising Star" },
       { value: 600,  clue: "THIS IS THE JOB ON CARD NUMBER 6.", answer: "Actress" },
       { value: 800,  clue: "IF A MOVIE ENDS WITH AN EQUAL NUMBER OF PATRIOT AND COMMUNIST SYMBOLS, THIS TEAM WINS THE ROUND.", answer: "The Communists" },
-      { value: 1000, clue: "THE RISING STAR WINS ONLY IF THE GAME REACHES A 3–3 TIE AFTER SIX MOVIES AND THE SEVENTH MOVIE IS A TIE OR WON BY THIS MARGIN.", answer: "1 symbol (a +1 win)" }
+      { value: 1000, clue: "BAMBI IS HIDDEN IN THIS FILM'S ARTWORK.", answer: "Animation", full: "img/hollywood-1947-animation.jpg" }
     ]},
     { name: "Messy Minutes", clues: [
       { value: 200,  trail: true, clue: "DINNER\nT _ _ _ _\nC _ _ _ _\nN _ _ _ _ _\nR _ _ _", answer: "DINNER TABLE CLOTH NAPKIN RING" },
@@ -274,7 +280,7 @@ const GAME = {
 <script>
 (function(){
   "use strict";
-  var KEY = "jeopardy-friendsgiving-v2";
+  var KEY = "jeopardy-friendsgiving-v3";
   var DEFAULT_NAMES = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
   var MAXT = GAME.maxTeams || 6;
 
@@ -430,7 +436,12 @@ const GAME = {
     var a = $("answer"), has = clue.answer && String(clue.answer).trim() !== "";
     a.textContent = has ? clue.answer : "No answer added";
     a.className = "shown" + (has ? "" : " empty") + (has && String(clue.answer).indexOf("\n") >= 0 ? " multi" : "");
-    if(clue.full){ $("clue-img").src = clue.full; }
+    if(clue.full){
+      var im = $("clue-img");
+      im.src = clue.full;
+      im.alt = clue.fullAlt || "Poster art";
+      im.className = "on" + (clue.img ? "" : " after-answer");
+    }
     if(clue.clip){
       var wrap = $("clue-clip"), frame = $("clue-clip-frame"), src = clipEmbedUrl(clue.clip, clue.clipStart, clue.clipEnd);
       if(wrap && frame && src){ frame.src = src; wrap.classList.add("on"); wrap.hidden = false; }
