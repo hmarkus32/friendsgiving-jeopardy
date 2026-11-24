@@ -127,8 +127,32 @@
   .fteam .row{display:flex;gap:10px}
   .fteam .ok,.fteam .no{width:60px;height:48px;border-radius:999px;border:0;font-size:1.5rem;cursor:pointer;color:#fff}
   .fteam .ok{background:#2ea05a}.fteam .no{background:#c9435e}
-  .fteam .lock{font-size:3.4rem;line-height:1}
-  #results-btn{margin-top:14px}
+  .fteam .lock{font-size:2.2rem;line-height:1}
+  .fteam .hidden-wager{font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,3.4vw,2.6rem);color:var(--gold);letter-spacing:.16em}
+  .fteam .lock-row{display:flex;align-items:center;gap:10px}
+  .fteam .lock-btn{font-family:var(--display);font-weight:600;font-size:1rem;padding:.35em 1em;border-radius:999px;border:0;
+    background:linear-gradient(180deg,var(--orange) 0%,var(--orange2) 100%);color:#2a1300;cursor:pointer}
+  #final-answer{display:none;font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,3vw,2.2rem);line-height:1.25;color:var(--gold);max-width:1000px;margin:8px auto 12px}
+  #final-answer.shown{display:block}
+  #reveal-final-btn,#results-btn{margin-top:14px}
+  #reveal-screen{align-items:center;justify-content:center;text-align:center;overflow:hidden;cursor:pointer;
+    background:radial-gradient(1000px 600px at 50% 35%, #8a3a18 0%, #4a1a14 60%, #2a100c 100%)}
+  #reveal-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .reveal-card{position:relative;z-index:3;padding:3vh 5vw;display:flex;flex-direction:column;align-items:center;gap:1.5vh;max-width:94vw}
+  #reveal-rank{margin:0;font-family:var(--display);font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-size:clamp(15px,2.3vw,32px);text-shadow:0 .08em .2em rgba(0,0,0,.4)}
+  #reveal-name{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(36px,9vw,120px);line-height:1.05;max-width:92vw;
+    background:linear-gradient(180deg,#ffd27a 0%,#ff8a2a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 28px rgba(255,154,60,.7)) drop-shadow(0 .05em 0 rgba(0,0,0,.35))}
+  #reveal-name.pop{animation:introPop .7s cubic-bezier(.2,1.55,.3,1) both}
+  #reveal-wager{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(22px,4vw,56px);color:var(--gold)}
+  #reveal-verdict{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(28px,5vw,72px)}
+  #reveal-verdict.right{color:#4ade80}
+  #reveal-verdict.wrong{color:#fb7185}
+  #reveal-score{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(28px,5.2vw,76px);color:var(--cream);text-shadow:0 .08em .2em rgba(0,0,0,.4)}
+  #reveal-hint{margin:.4em 0 0;color:var(--muted);font-size:clamp(14px,1.8vw,24px)}
+  @media (max-width:699px){
+    #reveal-name{font-size:clamp(34px,11vw,72px)}
+  }
   #final-screen>*,#podium-screen>*{align-self:center}
   #final-screen>#final-teams,#podium-screen>#podium{align-self:stretch}
   #podium{display:flex;align-items:flex-end;justify-content:center;gap:18px;margin:40px auto 10px;min-height:380px}
@@ -198,13 +222,17 @@
 const GAME = {
   title: "Jeopardy — Friendsgiving Edition 🦃",
   maxTeams: 6,
+  final: {
+    clue: "NAME THE STARTING FIVE OF LONE PEAK'S 2013 NATIONAL CHAMPIONSHIP BASKETBALL TEAM.",
+    answer: "Talon Shumway, Eric Mika, Nick Emery, TJ Haws, and Connor Toolson"
+  },
   categories: [
     { name: "Cedar Hoes", clues: [
       { value: 200,  clue: "WHAT WAS THE TRADITION OF KISSING AFTER SCHOOL DANCES CALLED?", answer: "Knighting" },
       { value: 400,  clue: "WHAT ARE THE NAMES OF THE TWIN SONS OF UTAH SENATOR MIKE LEE?", answer: "James and John Lee" },
       { value: 600,  clue: "WHO PLAYED JEAN VALJEAN IN LONE PEAK'S 2013 PRODUCTION OF LES MISÉRABLES?", answer: "Jake Nilson" },
       { value: 800,  clue: "THIS TEACHER WHO DESERVED ALL OF THE RUDENESS IN THE WORLD HAD THIS WEAPON HANGING IN HIS OR HER CLASSROOM.", answer: "Bowling ball" },
-      { value: 1000, clue: "NAME THE STARTING FIVE OF LONE PEAK'S 2013 NATIONAL CHAMPIONSHIP BASKETBALL TEAM.", answer: "Talon Shumway, Eric Mika, Nick Emery, TJ Haws, Connor Toolson" }
+      { value: 1000, clue: "THIS QUARTERBACK ON LONE PEAK'S 2012 STATE CHAMPIONSHIP TEAM WENT ON TO PLAY LINEBACKER FOR THE NEW ORLEANS SAINTS.", answer: "Chase Hanson" }
     ]},
     { name: "The Boy Who Lived", clues: [
       { value: 200,  clue: "THIS IS THE NAME OF HARRY POTTER'S SNOWY OWL.", answer: "Hedwig" },
@@ -298,11 +326,27 @@ const GAME = {
 
 <!-- Final round -->
 <div id="final-screen" class="screen">
-  <span class="final-tag">🏆 Final Round · Wager</span>
-  <p id="final-q">COMING SOON.</p>
+  <span class="final-tag" id="final-tag">🏆 Final Round · Wager</span>
+  <p id="final-q"></p>
+  <div id="final-answer"></div>
   <div id="final-teams"></div>
-  <button class="btn-big" id="results-btn" type="button" hidden>Results 🎉</button>
+  <button class="btn-big" id="reveal-final-btn" type="button" hidden>Reveal answer</button>
+  <button class="btn-big" id="results-btn" type="button" hidden>Reveal scores 🎉</button>
   <div style="margin-top:14px"><button class="btn-small" id="final-back" type="button">Back to board</button></div>
+</div>
+
+<!-- Final score reveal -->
+<div id="reveal-screen" class="screen">
+  <canvas id="reveal-canvas" aria-hidden="true"></canvas>
+  <div class="intro-glow" aria-hidden="true"></div>
+  <div class="reveal-card">
+    <p id="reveal-rank"></p>
+    <h1 id="reveal-name"></h1>
+    <p id="reveal-wager"></p>
+    <p id="reveal-verdict"></p>
+    <p id="reveal-score"></p>
+    <p id="reveal-hint">Tap to continue</p>
+  </div>
 </div>
 
 <!-- Podium -->
@@ -335,12 +379,12 @@ const GAME = {
 <script>
 (function(){
   "use strict";
-  var KEY = "jeopardy-friendsgiving-v10";
+  var KEY = "jeopardy-friendsgiving-v11";
   var DEFAULT_NAMES = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
   var MAXT = GAME.maxTeams || 6;
 
   function defaultState(){
-    return { played:{}, final:{wager:{},locked:{}}, teams: DEFAULT_NAMES.slice(0,2).map(function(n){return {name:n, score:0};}) };
+    return { played:{}, final:{wager:{},locked:{},judged:{},answerShown:false}, teams: DEFAULT_NAMES.slice(0,2).map(function(n){return {name:n, score:0};}) };
   }
   function load(){
     try{
@@ -352,7 +396,7 @@ const GAME = {
         return { name: (t && typeof t.name==="string") ? t.name : DEFAULT_NAMES[i], score: Number(t && t.score)||0 };
       });
       if(!s.final || typeof s.final!=="object") s.final = {};
-      s.final.wager = s.final.wager || {}; s.final.locked = s.final.locked || {};
+      s.final.wager = s.final.wager || {}; s.final.locked = s.final.locked || {}; s.final.judged = s.final.judged || {}; s.final.answerShown = !!s.final.answerShown;
       return s;
     }catch(e){ return defaultState(); }
   }
@@ -378,7 +422,7 @@ const GAME = {
   function show(id){
     if(id !== "clue-screen") clearClip();
     if(id !== "intro-screen") stopIntroFx();
-    ["title","setup-screen","intro-screen","board-screen","clue-screen","final-screen","podium-screen"].forEach(function(s){ $(s).classList.toggle("active", s===id); });
+    ["title","setup-screen","intro-screen","board-screen","clue-screen","final-screen","reveal-screen","podium-screen"].forEach(function(s){ $(s).classList.toggle("active", s===id); });
   }
   function fmt(n){ return (n<0?"-":"") + "$" + Math.abs(n).toLocaleString("en-US"); }
   function key(c,r){ return c+"-"+r; }
@@ -513,45 +557,154 @@ const GAME = {
   }
 
   /* ---- Final round ---- */
+  function isPlaceholder(clue){
+    return !clue || clue.answer === "TBD" || clue.clue === "COMING SOON.";
+  }
   function allPlayed(){
-    for(var c=0;c<GAME.categories.length;c++) for(var r=0;r<5;r++) if(!state.played[key(c,r)]) return false;
+    for(var c=0;c<GAME.categories.length;c++){
+      var clues = GAME.categories[c].clues;
+      for(var r=0;r<clues.length;r++){
+        if(!isPlaceholder(clues[r]) && !state.played[key(c,r)]) return false;
+      }
+    }
     return true;
   }
   function updateFinalBar(){ var a = allPlayed(); $("final-btn").hidden = !a; $("final-link").hidden = a; }
   function maxWager(i){ return Math.max(0, state.teams[i].score); }
   function clampWager(i,v){ v = parseInt(v,10); if(isNaN(v)||v<0) v = 0; return Math.min(v, maxWager(i)); }
-  function allLocked(){ return state.teams.every(function(t,i){ return !!state.final.locked[i]; }); }
+  function allWagersLocked(){ return state.teams.every(function(t,i){ return !!state.final.locked[i]; }); }
+  function allJudged(){ return state.teams.every(function(t,i){ return state.final.judged[i]===1 || state.final.judged[i]===-1; }); }
+  function hiddenWagerEl(name){
+    var wrap = document.createElement("div"); wrap.className = "lock-row";
+    var hid = document.createElement("div"); hid.className = "hidden-wager"; hid.textContent = "$???"; hid.setAttribute("aria-label", name+" wager hidden");
+    var l = document.createElement("div"); l.className = "lock"; l.textContent = "🔒"; l.setAttribute("aria-label", name+" wager locked");
+    wrap.appendChild(hid); wrap.appendChild(l);
+    return wrap;
+  }
+  function lockWager(i, raw){
+    if(state.final.locked[i]) return;
+    state.final.wager[i] = clampWager(i, raw);
+    state.final.locked[i] = true;
+    save(); renderFinal();
+  }
+  function judgeTeam(i, sign){
+    if(!state.final.answerShown) return;
+    if(state.final.judged[i]===1 || state.final.judged[i]===-1) return;
+    var w = clampWager(i, state.final.wager[i]||0);
+    state.final.wager[i] = w;
+    state.teams[i].score += sign * w;
+    state.final.judged[i] = sign;
+    save(); renderFinal();
+  }
   function renderFinal(){
+    var fin = GAME.final || {};
+    $("final-q").textContent = fin.clue || "";
+    var ans = $("final-answer");
+    ans.textContent = fin.answer || "";
+    ans.classList.toggle("shown", !!state.final.answerShown);
+    var allW = allWagersLocked();
+    var allJ = allJudged();
+    $("final-tag").textContent = !allW ? "🏆 Final Round · Wager" : (state.final.answerShown ? "🏆 Final Round · Grade" : "🏆 Final Round");
     var box = $("final-teams"); box.innerHTML = "";
-    state.teams.forEach(function(t,i){
+    state.teams.forEach(function(tm,i){
       var d = document.createElement("div"); d.className = "fteam"; d.dataset.i = i;
-      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = t.name; d.appendChild(nm);
+      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = tm.name; d.appendChild(nm);
       if(state.final.locked[i]){
-        var l = document.createElement("div"); l.className = "lock"; l.textContent = "🔒"; l.setAttribute("aria-label", t.name+" locked"); d.appendChild(l);
+        d.appendChild(hiddenWagerEl(tm.name));
+        if(state.final.answerShown && !(state.final.judged[i]===1 || state.final.judged[i]===-1)){
+          var row = document.createElement("div"); row.className = "row";
+          var ok = document.createElement("button"); ok.type="button"; ok.className="ok"; ok.textContent="✓"; ok.setAttribute("aria-label", tm.name+" correct");
+          var no = document.createElement("button"); no.type="button"; no.className="no"; no.textContent="✗"; no.setAttribute("aria-label", tm.name+" wrong");
+          ok.addEventListener("click", function(){ judgeTeam(i, 1); });
+          no.addEventListener("click", function(){ judgeTeam(i, -1); });
+          row.appendChild(ok); row.appendChild(no); d.appendChild(row);
+        }
       } else {
         var lb = document.createElement("label"); lb.textContent = "Wager (0 – "+fmt(maxWager(i))+")";
         var inp = document.createElement("input"); inp.type = "number"; inp.min = 0; inp.max = maxWager(i); inp.step = 100; inp.className = "wager";
-        inp.value = String(clampWager(i, state.final.wager[i]||0)); inp.disabled = maxWager(i)===0;
-        inp.setAttribute("aria-label", t.name+" wager");
+        inp.value = state.final.wager[i] != null && state.final.wager[i] !== "" ? String(clampWager(i, state.final.wager[i])) : "";
+        inp.disabled = maxWager(i)===0;
+        if(maxWager(i)===0) inp.value = "0";
+        inp.setAttribute("aria-label", tm.name+" wager");
         inp.addEventListener("input", function(){ state.final.wager[i] = clampWager(i, inp.value); save(); });
-        inp.addEventListener("blur", function(){ inp.value = String(clampWager(i, inp.value)); state.final.wager[i] = Number(inp.value); save(); });
+        inp.addEventListener("keydown", function(e){
+          if(e.key==="Enter"){ e.preventDefault(); e.stopPropagation(); lockWager(i, inp.value); }
+        });
         lb.appendChild(document.createElement("br")); lb.appendChild(inp); d.appendChild(lb);
-        var row = document.createElement("div"); row.className = "row";
-        var ok = document.createElement("button"); ok.type="button"; ok.className="ok"; ok.textContent="✓"; ok.setAttribute("aria-label","Correct");
-        var no = document.createElement("button"); no.type="button"; no.className="no"; no.textContent="✗"; no.setAttribute("aria-label","Wrong");
-        function judge(sign){
-          var w = clampWager(i, inp.value);
-          state.final.wager[i] = w; state.teams[i].score += sign*w; state.final.locked[i] = true;
-          save(); renderFinal();
-        }
-        ok.addEventListener("click", function(){ judge(1); }); no.addEventListener("click", function(){ judge(-1); });
-        row.appendChild(ok); row.appendChild(no); d.appendChild(row);
+        var lockBtn = document.createElement("button"); lockBtn.type="button"; lockBtn.className="lock-btn"; lockBtn.textContent = "Lock wager";
+        lockBtn.addEventListener("click", function(){ lockWager(i, inp.value); });
+        d.appendChild(lockBtn);
       }
       box.appendChild(d);
     });
-    $("results-btn").hidden = !allLocked();
+    $("reveal-final-btn").hidden = !(allW && !state.final.answerShown);
+    $("results-btn").hidden = !allJ;
+  }
+  function revealFinalAnswer(){
+    if(!allWagersLocked()) return;
+    state.final.answerShown = true;
+    save(); renderFinal();
   }
   function openFinal(){ current = null; renderFinal(); show("final-screen"); }
+  var revealState = { order:[], idx:0, lastAdvance:0 };
+  function revealOrder(){
+    return state.teams.map(function(tm,i){
+      return {
+        i:i,
+        name:tm.name,
+        wager:Number(state.final.wager[i])||0,
+        correct: state.final.judged[i]===1,
+        score: tm.score
+      };
+    }).sort(function(a,b){
+      if(a.score !== b.score) return a.score - b.score;
+      return a.i - b.i;
+    });
+  }
+  function showRevealSlide(){
+    var item = revealState.order[revealState.idx];
+    if(!item) return;
+    var win = Math.max.apply(null, revealState.order.map(function(x){ return x.score; }));
+    var isWin = item.score === win;
+    $("reveal-rank").textContent = "Team "+(revealState.idx+1)+" of "+revealState.order.length;
+    var name = $("reveal-name");
+    name.textContent = item.name;
+    name.classList.remove("pop");
+    void name.offsetWidth;
+    name.classList.add("pop");
+    $("reveal-wager").textContent = "Wagered "+fmt(item.wager);
+    var v = $("reveal-verdict");
+    v.textContent = item.correct ? "Right" : "Wrong";
+    v.className = item.correct ? "right" : "wrong";
+    $("reveal-score").textContent = "Final score  "+fmt(item.score);
+    $("reveal-hint").textContent = revealState.idx >= revealState.order.length-1 ? "Tap for the podium" : "Tap to continue";
+    intro.particles = [];
+    sizeIntroCanvas();
+    if(isWin){ spawnBurst(true); spawnBurst(true); }
+    else spawnBurst(false);
+  }
+  function startReveal(){
+    if(!allJudged()) return;
+    revealState.order = revealOrder();
+    revealState.idx = 0;
+    revealState.lastAdvance = 0;
+    show("reveal-screen");
+    sizeIntroCanvas();
+    showRevealSlide();
+    if(!intro.raf) intro.raf = requestAnimationFrame(tickIntro);
+  }
+  function advanceReveal(){
+    if(!$("reveal-screen").classList.contains("active")) return;
+    var now = Date.now();
+    if(now - revealState.lastAdvance < 280) return;
+    revealState.lastAdvance = now;
+    if(revealState.idx >= revealState.order.length-1){
+      showResults();
+      return;
+    }
+    revealState.idx += 1;
+    showRevealSlide();
+  }
   function renderPodium(){
     var sorted = state.teams.map(function(t){ return {name:t.name, score:t.score}; }).sort(function(a,b){ return b.score-a.score; });
     var groups = [];
@@ -587,7 +740,9 @@ const GAME = {
   /* ---- Wiring ---- */
   $("final-btn").addEventListener("click", openFinal);
   $("final-link").addEventListener("click", openFinal);
-  $("results-btn").addEventListener("click", showResults);
+  $("reveal-final-btn").addEventListener("click", revealFinalAnswer);
+  $("results-btn").addEventListener("click", startReveal);
+  $("reveal-screen").addEventListener("click", advanceReveal);
   $("final-back").addEventListener("click", function(){ renderBoard(); renderBoardScores(); show("board-screen"); });
   $("podium-back").addEventListener("click", function(){ renderBoard(); renderBoardScores(); show("board-screen"); });
   function gameInProgress(){
@@ -629,8 +784,12 @@ const GAME = {
     clearTimeout(intro.timer);
     intro.timer = 0;
   }
+  function fxCanvas(){
+    if($("reveal-screen") && $("reveal-screen").classList.contains("active")) return $("reveal-canvas");
+    return $("intro-canvas");
+  }
   function sizeIntroCanvas(){
-    var c = $("intro-canvas"); if(!c) return;
+    var c = fxCanvas(); if(!c) return;
     var dpr = Math.min(2, window.devicePixelRatio || 1);
     c.width = Math.floor(window.innerWidth * dpr);
     c.height = Math.floor(window.innerHeight * dpr);
@@ -683,7 +842,7 @@ const GAME = {
       ctx.restore();
       return true;
     });
-    if($("intro-screen").classList.contains("active") || intro.particles.length){
+    if($("intro-screen").classList.contains("active") || $("reveal-screen").classList.contains("active") || intro.particles.length){
       intro.raf = requestAnimationFrame(tickIntro);
     }
   }
@@ -740,7 +899,7 @@ const GAME = {
     showIntroCard();
   }
   window.addEventListener("resize", function(){
-    if($("intro-screen").classList.contains("active")) sizeIntroCanvas();
+    if($("intro-screen").classList.contains("active") || $("reveal-screen").classList.contains("active")) sizeIntroCanvas();
   });
 
   $("start-btn").addEventListener("click", function(){
@@ -770,7 +929,13 @@ const GAME = {
       else if($("intro-screen").classList.contains("active")) { renderSetup(); show("setup-screen"); }
       else if($("setup-screen").classList.contains("active")) { show("title"); $("start-btn").focus(); }
       else if($("board-screen").classList.contains("active")) { show("title"); }
+      else if($("reveal-screen").classList.contains("active")) { showResults(); }
       else if($("final-screen").classList.contains("active") || $("podium-screen").classList.contains("active")) { renderBoard(); renderBoardScores(); show("board-screen"); }
+      return;
+    }
+    if($("reveal-screen").classList.contains("active") && !typing && (e.key===" " || e.key==="ArrowRight")){
+      e.preventDefault();
+      advanceReveal();
       return;
     }
     if($("intro-screen").classList.contains("active") && !typing && (e.key===" " || e.key==="ArrowRight")){
