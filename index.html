@@ -171,7 +171,7 @@ const GAME = {
       { value: 200,  clue: "THIS IS THE NAME OF HARRY POTTER'S SNOWY OWL.", answer: "Hedwig" },
       { value: 400,  clue: "HARRY CATCHES THE HOGWARTS EXPRESS FROM THIS PLATFORM AT KING'S CROSS STATION.", answer: "Platform 9¾ (Nine and Three-Quarters)" },
       { value: 600,  clue: "THESE THREE MAGICAL OBJECTS MAKE UP THE DEATHLY HALLOWS.", answer: "The Elder Wand, the Resurrection Stone, and the Invisibility Cloak" },
-      { value: 800,  clue: "THE PAGE SNAPE TELLS THE CLASS TO TURN TO IN THE WEREWOLF LESSON.", answer: "Page 394", clip: "https://www.youtube.com/watch?v=YlIKLLkvulY" },
+      { value: 800,  clue: "THE PAGE SNAPE TELLS THE CLASS TO TURN TO IN THE WEREWOLF LESSON.", answer: "Page 394", clip: "https://www.youtube.com/watch?v=YlIKLLkvulY", clipStart: 7, clipEnd: 15 },
       { value: 1000, clue: "NAME ALL SEVEN HORCRUXES THAT CONTAINED A PIECE OF VOLDEMORT'S SOUL.", answer: "Tom Riddle's diary, Marvolo Gaunt's ring, Salazar Slytherin's locket, Helga Hufflepuff's cup, Rowena Ravenclaw's diadem, Harry Potter, and Nagini" }
     ]},
     { name: "Fifty Nifty", clues: [
@@ -301,9 +301,13 @@ const GAME = {
   var current = null;   // {c, r}
   var $ = function(id){ return document.getElementById(id); };
 
-  function clipEmbedUrl(url){
+  function clipEmbedUrl(url, start, end){
     var m = String(url||"").match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/);
-    return m ? "https://www.youtube-nocookie.com/embed/"+m[1]+"?playsinline=1" : "";
+    if(!m) return "";
+    var q = "playsinline=1";
+    if(start != null && start !== "") q += "&start=" + Number(start);
+    if(end != null && end !== "") q += "&end=" + Number(end);
+    return "https://www.youtube-nocookie.com/embed/"+m[1]+"?"+q;
   }
   function clearClip(){
     var wrap = $("clue-clip"), frame = $("clue-clip-frame");
@@ -428,7 +432,7 @@ const GAME = {
     a.className = "shown" + (has ? "" : " empty") + (has && String(clue.answer).indexOf("\n") >= 0 ? " multi" : "");
     if(clue.full){ $("clue-img").src = clue.full; }
     if(clue.clip){
-      var wrap = $("clue-clip"), frame = $("clue-clip-frame"), src = clipEmbedUrl(clue.clip);
+      var wrap = $("clue-clip"), frame = $("clue-clip-frame"), src = clipEmbedUrl(clue.clip, clue.clipStart, clue.clipEnd);
       if(wrap && frame && src){ frame.src = src; wrap.classList.add("on"); wrap.hidden = false; }
     }
     $("reveal-btn").disabled = true;
